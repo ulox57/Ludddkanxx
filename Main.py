@@ -1,8 +1,12 @@
 import asyncio
+import logging
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiohttp import web
+
+# Увімкнення логування, щоб бачити помилки в консолі
+logging.basicConfig(level=logging.INFO)
 
 TOKEN = "9285396228:AAHZWPJe8t85oqNUCTiYKz2aDWxQax5B65I"
 
@@ -69,8 +73,14 @@ async def change_language(callback: types.CallbackQuery):
 @dp.callback_query(F.data == "play_slots")
 async def play_slots(callback: types.CallbackQuery):
     lang = user_lang.get(callback.from_user.id, "ua")
+    
+    # Бот надсилає кубик-слоти у той же чат
     msg = await callback.message.answer_dice(emoji="🎰")
+    
+    # Чекаємо 4 секунди, поки крутиться анімація
     await asyncio.sleep(4)
+    
+    # 64 — це фіксоване число для комбінації 777 в Telegram
     if msg.dice.value == 64:
         await msg.reply(TEXTS[lang]["slots_win"].format(name=callback.from_user.full_name))
     else:
@@ -80,8 +90,14 @@ async def play_slots(callback: types.CallbackQuery):
 @dp.callback_query(F.data == "play_darts")
 async def play_darts(callback: types.CallbackQuery):
     lang = user_lang.get(callback.from_user.id, "ua")
+    
+    # Бот надсилає дартс
     msg = await callback.message.answer_dice(emoji="🎯")
+    
+    # Чекаємо 4 секунди, поки летить дротик
     await asyncio.sleep(4)
+    
+    # 6 — це точне влучання в червоний центр (яблучко)
     if msg.dice.value == 6:
         await msg.reply(TEXTS[lang]["darts_center"].format(name=callback.from_user.full_name))
     else:
@@ -92,15 +108,17 @@ async def handle(request):
     return web.Response(text="Бот працює!")
 
 async def main():
+    # Запуск веб-сервера для підтримки активності на хостингу
     app = web.Application()
     app.router.add_get("/", handle)
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", 10000)
     asyncio.create_task(site.start())
+    
+    # Запуск бота
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
-    "slots_win": "🎉 JACKPOT! 777 WINNER!\n\n👑 Гравець: {name}\n🎁 Приз: 25 Telegram Stars\n\n👤 Адмін @M7aq10, перевірте виграш вручну.",
 
