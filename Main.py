@@ -102,3 +102,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    "slots_win": "🎉 JACKPOT! 777 WINNER!\n\n👑 Гравець: {name}\n🎁 Приз: 25 Telegram Stars\n\n👤 Адмін @M7aq10, перевірте виграш вручну.",
+
